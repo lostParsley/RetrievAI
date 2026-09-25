@@ -1,0 +1,10 @@
+Product Notes
+
+The Beacon app helps users organize personal research notes.
+
+The first version supports:
+- tags
+- full-text search
+- markdown export
+
+The roadmap includes shared workspaces, but that feature has not been released yet.
