@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimal RAG Teaching UI</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <p class="eyebrow">Minimal RAG Teaching UI</p>
+        <h1>See the full RAG flow in one page</h1>
+        <p class="hero-copy">
+          Index local documents, ask a question, inspect retrieved chunks, and
+          connect each step back to the architecture.
+        </p>
+        <div class="status-row">
+          <div class="status-card">
+            <span class="status-label">API health</span>
+            <strong id="health-status">Checking...</strong>
+          </div>
+          <div class="status-card">
+            <span class="status-label">Core routes</span>
+            <strong><code>/index</code>, <code>/ask</code>, <code>/health</code></strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="flow-strip">
+        <div class="flow-step">1. Load documents</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">2. Split into chunks</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">3. Embed text</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">4. Store in Qdrant</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">5. Retrieve top-k</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">6. Generate answer</div>
+      </section>
+
+      <section class="grid">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">Step A</p>
+              <h2>Index Documents</h2>
+            </div>
+            <button id="index-button" class="button">Index Documents</button>
+          </div>
+
+          <label class="field">
+            <span>Docs path override</span>
+            <input
+              id="docs-path"
+              type="text"
+              placeholder="Leave blank to use the server default folder"
+            />
+          </label>
+
+          <p class="helper">
+            The backend will load files from the configured docs folder when this
+            is blank.
+          </p>
+
+          <div id="index-message" class="message">No indexing run yet.</div>
+
+          <div id="index-summary" class="summary empty">
+            <p>Run indexing to see documents loaded, chunks created, and the Qdrant collection details.</p>
+          </div>
+
+          <div>
+            <h3>Indexed chunks</h3>
+            <div id="indexed-chunks" class="list empty">
+              <p>Chunk previews will appear here after indexing.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-kicker">Step B</p>
+              <h2>Ask a Question</h2>
+            </div>
+            <button id="ask-button" class="button">Ask</button>
+          </div>
+
+          <label class="field">
+            <span>Question</span>
+            <textarea
+              id="question"
+              rows="4"
+              placeholder="Example: How many remote days per week are allowed?"
+            ></textarea>
+          </label>
+
+          <label class="field short-field">
+            <span>Top-k</span>
+            <input id="top-k" type="number" min="1" value="3" />
+          </label>
+
+          <div id="ask-message" class="message">Ask a question after indexing.</div>
+
+          <div id="answer-box" class="answer-box empty">
+            <p>The grounded answer will appear here.</p>
+          </div>
+
+          <div>
+            <h3>Retrieved chunks</h3>
+            <div id="retrieved-chunks" class="list empty">
+              <p>Retrieved chunks and similarity scores will appear here.</p>
+            </div>
+          </div>
+
+          <details class="prompt-box">
+            <summary>Prompt used</summary>
+            <pre id="prompt-used">No prompt yet.</pre>
+          </details>
+        </section>
+      </section>
+
+      <section class="panel full-width">
+        <div class="panel-head">
+          <div>
+            <p class="panel-kicker">How To Read This UI</p>
+            <h2>What each part is showing you</h2>
+          </div>
+        </div>
+        <div class="teaching-grid">
+          <article class="teach-card">
+            <h3>Indexing panel</h3>
+            <p>
+              Shows what the backend loaded from disk, how many chunks were
+              created, and what was inserted into Qdrant.
+            </p>
+          </article>
+          <article class="teach-card">
+            <h3>Retrieved chunks</h3>
+            <p>
+              These are the pieces of context Qdrant returned for your question.
+              This is the retrieval part of RAG.
+            </p>
+          </article>
+          <article class="teach-card">
+            <h3>Final answer</h3>
+            <p>
+              This is generated only after retrieval. The prompt viewer lets you
+              inspect the exact grounded context sent to the answer step.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
