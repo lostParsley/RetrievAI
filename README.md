@@ -1,6 +1,4 @@
-# Minimal End-to-End RAG App
-
-This project is a very small Retrieval-Augmented Generation (RAG) application built for learning. It shows the full flow clearly:
+# End-to-End RAG App
 
 1. Load local documents from a folder.
 2. Split them into chunks.
@@ -137,9 +135,6 @@ In Qdrant, this project stores:
 
 If the retrieved chunks are too weak, the app says it cannot answer confidently from the context.
 
-## Line-by-line walkthrough of `app/rag_pipeline.py`
-
-The main teaching file is [`app/rag_pipeline.py`](/Users/carlosdiaz/CodexProjects/RAG_Project/app/rag_pipeline.py).
 
 ### `SentenceTransformerEmbeddings`
 
@@ -240,56 +235,6 @@ This is intentionally conservative:
 - if similarity is too low, it says confidence is low
 - otherwise it sends the prompt to the small local generation model
 
-## Concrete example with one sample document
-
-Take [`sample_docs/company_handbook.md`](/Users/carlosdiaz/CodexProjects/RAG_Project/sample_docs/company_handbook.md).
-
-It contains this fact:
-
-- employees may work remotely three days per week
-
-During indexing, the app does this:
-
-1. Loads the file from disk
-2. Splits it into chunks
-   - in your current sample data it stayed as one chunk because it is short
-3. Embeds that chunk into a vector
-4. Stores it in Qdrant with payload like this:
-
-```json
-{
-  "id": "some-uuid",
-  "vector": [0.12, -0.44, "..."],
-  "payload": {
-    "text": "# Company Handbook\n\nAcme Analytics allows employees to work remotely three days per week...",
-    "metadata": {
-      "source": "company_handbook.md",
-      "chunk_index": 0,
-      "page": null
-    }
-  }
-}
-```
-
-Then if you ask:
-
-```json
-{"question":"How many remote days per week are allowed?"}
-```
-
-the app does this:
-
-1. Embeds the question into a vector
-2. Searches Qdrant for nearby chunk vectors
-3. Finds the chunk from `company_handbook.md`
-4. Builds a prompt containing that chunk
-5. Generates the answer from that context
-
-That is the core idea of RAG in this app:
-
-- documents are stored outside the model
-- retrieval happens first
-- answer generation happens second
 
 ## What Qdrant is and how it compares to MySQL or PostgreSQL
 
@@ -330,8 +275,6 @@ Qdrant is configured in two places:
 
 ### 1. Docker Compose
 
-[`docker-compose.yml`](/Users/carlosdiaz/CodexProjects/RAG_Project/docker-compose.yml) starts the Qdrant server locally and maps:
-
 - port `6333` for HTTP API access
 - port `6334` for gRPC
 
@@ -343,12 +286,12 @@ That volume is where Qdrant persists its collection data on disk.
 
 ### 2. Application code
 
-[`app/config.py`](/Users/carlosdiaz/CodexProjects/RAG_Project/app/config.py) provides:
+[`app/config.py`](/RAG_Project/app/config.py) provides:
 
 - `QDRANT_URL`
 - `QDRANT_COLLECTION_NAME`
 
-[`app/rag_pipeline.py`](/Users/carlosdiaz/CodexProjects/RAG_Project/app/rag_pipeline.py) creates the collection with:
+[`app/rag_pipeline.py`](/RAG_Project/app/rag_pipeline.py) creates the collection with:
 
 - vector size = embedding model dimension
 - distance metric = cosine
